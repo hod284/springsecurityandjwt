@@ -49,9 +49,6 @@ public class LoginSecurity {
     .anyRequest().authenticated()).
     sessionManagement(session ->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
     .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-    
-    // H2 Console을 위한 설정
-      security.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
         
     /* 
     만약 jwt랑 redis를 안사용한다면 이걸 사용해도 됨 하지만 jwt랑 redis를 사용하기 때문에 주석처리

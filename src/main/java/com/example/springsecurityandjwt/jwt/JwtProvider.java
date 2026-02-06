@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Component
 public class JwtProvider {
 
-   @Value("${jwt.secrect}") 
+   @Value("${jwt.secret}") 
    private String Secret;
 
    @Value("${jwt.AcessExpire}")
