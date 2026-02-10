@@ -1,6 +1,5 @@
 package com.example.springsecurityandjwt.DTO;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
