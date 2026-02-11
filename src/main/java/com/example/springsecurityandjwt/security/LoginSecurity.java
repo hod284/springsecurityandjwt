@@ -36,7 +36,7 @@ public class LoginSecurity {
     .authorizeHttpRequests(auth->auth
     .requestMatchers("/api/auth/**","/h2-console/**").permitAll()
     // websocket
-    .requestMatchers("/ws-monitorng/**").permitAll()
+    .requestMatchers("/ws-monitoring/**").permitAll()
     /*
     📊 Actuator & Prometheus 설명
      간단하게 말하면:
