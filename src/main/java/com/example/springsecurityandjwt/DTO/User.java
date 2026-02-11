@@ -1,7 +1,8 @@
 package com.example.springsecurityandjwt.DTO;
 
 import java.time.LocalDateTime;
-
+import lombok.Builder;
+import lombok.Data;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,13 +14,19 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+@Data
+//객체를 체이닝 방식으로 안전하게 생성하게 해주는 Lombok 어노테이션
+@Builder
 @Entity
 @Table(name = "Users")
 @Getter
 @Setter
+//모든 필드를 매개변수로 받는 생성자를 자동으로 만들어주는 Lombok 어노테이션
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class User  {
        
@@ -27,15 +34,22 @@ public class User  {
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private long index;
 
-    @Column(unique =  true, nullable = false)
-    private String id;
-
+   @Column(unique = true, nullable = false)
+    private String username;
+   
+    @Column(nullable = false)
+    private String email;
+   
     @Column(nullable = false)
     private String password;
-   // enum 값을 string으로 db에 저장
+   
+    // enum 값을 string으로 db에 저장
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Column(nullable = false)
+    private boolean enabled = true;
 
    @Column(name = "created_at")
     private LocalDateTime createdAt;

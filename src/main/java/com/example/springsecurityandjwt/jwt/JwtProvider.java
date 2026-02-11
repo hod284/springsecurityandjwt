@@ -1,7 +1,6 @@
 package com.example.springsecurityandjwt.jwt;
 
 import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -21,11 +20,11 @@ public class JwtProvider {
    @Value("${jwt.secret}") 
    private String Secret;
 
-   @Value("${jwt.AcessExpire}")
-   private Long AcessExpire;
+   @Value("${jwt.access-expire}")
+   public Long AcessExpire;
 
-    @Value("${jwt.RefreshExpire}")
-   private Long RefreshExpire;
+    @Value("${jwt.refresh-expire}")
+   public Long RefreshExpire;
 
   
 
