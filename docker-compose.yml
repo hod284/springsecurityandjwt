@@ -44,21 +44,20 @@ services:
 
   # Spring Boot Application
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # Docker Hub에서 이미지를 가져옵니다 (YOUR_DOCKERHUB_USERNAME을 실제 사용자명으로 변경하세요)
+    image: hod284/spring-security-jwt-app:latest
     container_name: spring-app
     environment:
-      # Database Configuration (환경별로 다름)
+      # Database Configuration
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/monitoring_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: password
       
-      # Redis Configuration (환경별로 다름)
+      # Redis Configuration
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       
-      # Logging (환경별로 다를 수 있음)
+      # Logging
       LOGGING_LEVEL_ROOT: INFO
       LOGGING_LEVEL_COM_EXAMPLE: DEBUG
       
