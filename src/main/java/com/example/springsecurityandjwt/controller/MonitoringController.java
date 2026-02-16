@@ -20,11 +20,11 @@ import java.util.Map;
 @RequestMapping("/api/monitoring")
 @RequiredArgsConstructor
 @Slf4j
-public class MoniteringController {
+public class MonitoringController {
      private final MeterRegistry meterRegistry;
      
-     @GetMapping("/meterics/cpu")
-     public ResponseEntity<Map<String, Object>> GetCpuMetrics() {
+     @GetMapping("/metrics/cpu")
+     public ResponseEntity<Map<String, Object>> getCpuMetrics() {
         Map <String, Object> cpuMetrics = new HashMap<>();
         try 
         {      
@@ -67,7 +67,7 @@ public class MoniteringController {
             return ResponseEntity.ok(memoryMetrics);
      }
      @GetMapping("/metrics/threads")
-     public ResponseEntity<Map<String, Object>> getThreadMetrics(@RequestParam String param) {
+     public ResponseEntity<Map<String, Object>> getThreadMetrics() {
             Map<String, Object> threadMetrics = new HashMap<>();
             try 
             {
@@ -87,7 +87,7 @@ public class MoniteringController {
             return ResponseEntity.ok(threadMetrics); 
      }
      @GetMapping("/metrics/all")
-     public ResponseEntity<Map<String, Object>> getMethodName(@RequestParam String param) {
+     public ResponseEntity<Map<String, Object>> getAllMetrics() {
         Map<String, Object> allMetrics = new HashMap<>();
         
         try {
