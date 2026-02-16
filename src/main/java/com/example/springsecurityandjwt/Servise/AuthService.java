@@ -23,37 +23,56 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
     private final RedisTemplate<String, String> redisTemplate;
-
     @Transactional
-   public AuthResponse register(RegisterRequest request) {
+    public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.username())) {
             throw new RuntimeException("Username is already taken");
         }
-         if (userRepository.existsByEmail(request.email())) {
+        if (userRepository.existsByEmail(request.email())) {
             throw new RuntimeException("이미 존재하는 이메일입니다");
         }
+        
+        // Role 결정 - 요청에서 받은 role 사용, 없으면 USER
+        Role userRole;
+        try {
+            userRole = request.role() != null && !request.role().isEmpty() 
+                ? Role.valueOf(request.role().toUpperCase()) 
+                : Role.USER;
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid role provided: {}, defaulting to USER", request.role());
+            userRole = Role.USER;
+        }
+        
         User user = User.builder()
                 .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
                 .email(request.email())
-                .role(Role.USER)
+                .role(userRole)  // ← 동적으로 설정
                 .enabled(true)
                 .build();
          
         userRepository.save(user);
         String accessToken = jwtProvider.GeneratedAcessToken(new CustomDetail(user));
         String refreshToken = jwtProvider.GeneratedRefreshToken(new CustomDetail(user));
-      // Refresh Token을 Redis에 저장
+        
+        // Refresh Token을 Redis에 저장
         redisTemplate.opsForValue()
                 .set("REFRESH:" + user.getUsername(), refreshToken, jwtProvider.RefreshExpire, TimeUnit.MILLISECONDS);
-         log.info("User registered in: {}", user.getUsername());
-         return new AuthResponse(accessToken,
+        
+        log.info("User registered: {} with role: {}", user.getUsername(), user.getRole());
+        
+        return new AuthResponse(
+            accessToken,
             refreshToken,
-            "Bearer",jwtProvider.AcessExpire,
-            user.getUsername(),user.getRole().name());
+            "Bearer",
+            jwtProvider.AcessExpire,
+            user.getUsername(),
+            user.getRole().name()
+        );
     }
+    
     @Transactional(readOnly = true)
-     public AuthResponse login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.username(),
@@ -65,21 +84,29 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         String accessToken = jwtProvider.GeneratedAcessToken(new CustomDetail(user));
         String refreshToken = jwtProvider.GeneratedRefreshToken(new CustomDetail(user));
-           // Refresh Token을 Redis에 저장
+        
+        // Refresh Token을 Redis에 저장
         redisTemplate.opsForValue()
                 .set("REFRESH:" + user.getUsername(), refreshToken, jwtProvider.RefreshExpire, TimeUnit.MILLISECONDS);
-         log.info("User logged in: {}", user.getUsername());
-          return new AuthResponse(accessToken,
+        
+        log.info("User logged in: {}", user.getUsername());
+        
+        return new AuthResponse(
+            accessToken,
             refreshToken,
-            "Bearer",jwtProvider.AcessExpire,
-            user.getUsername(),user.getRole().name());
+            "Bearer",
+            jwtProvider.AcessExpire,
+            user.getUsername(),
+            user.getRole().name()
+        );
     }
+    
     @Transactional(readOnly = true)
     public AuthResponse refreshToken(String refreshToken) {
         String username = jwtProvider.extractUsername(refreshToken);
         String storedRefreshToken = redisTemplate.opsForValue().get("REFRESH:" + username);
 
-        if (storedRefreshToken == null ) 
+        if (storedRefreshToken == null) 
             throw new RuntimeException("Refresh token이 만료되었거나 존재하지 않습니다");
            
         if (!storedRefreshToken.equals(refreshToken)) 
@@ -94,12 +121,15 @@ public class AuthService {
         String newAccessToken = jwtProvider.GeneratedAcessToken(new CustomDetail(user));
 
         log.info("Refresh token issued for user: {}", user.getUsername());
-
       
-         return new AuthResponse(newAccessToken,
+        return new AuthResponse(
+            newAccessToken,
             refreshToken,
-            "Bearer",jwtProvider.AcessExpire,
-            user.getUsername(),user.getRole().name());
+            "Bearer",
+            jwtProvider.AcessExpire,
+            user.getUsername(),
+            user.getRole().name()
+        );
     }
      public void logout(String accessToken) {
         String username = jwtProvider.extractUsername(accessToken);
