@@ -1,6 +1,5 @@
 # Build Stage
-FROM gradle:9.6-jdk17-alpine AS builder
-
+FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 
 # Gradle 캐싱을 위한 의존성 파일 복사
