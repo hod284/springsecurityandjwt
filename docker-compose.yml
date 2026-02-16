@@ -46,7 +46,7 @@ services:
   app:
     # Docker Hub에서 이미지를 가져옵니다 (YOUR_DOCKERHUB_USERNAME을 실제 사용자명으로 변경하세요)
     image: hod284/spring-security-jwt-app:latest
-    container_name: spring-app
+    container_name: spring-monitoring-app
     environment:
       # Database Configuration
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/monitoring_db
