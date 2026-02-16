@@ -2,7 +2,7 @@ package com.example.springsecurityandjwt.Repositry;
 
 import com.example.springsecurityandjwt.DTO.*;
 
-import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.*;
 
