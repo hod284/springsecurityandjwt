@@ -45,7 +45,7 @@ public class LoginSecurity {
      */
     // Actuator & Prometheus
     .requestMatchers("/actuator/**").permitAll()
-    .requestMatchers("/api/monitoring/**").hasAllRoles("ADMIN")
+    .requestMatchers("/api/monitoring/**").hasRole("ADMIN")
     .anyRequest().authenticated()).
     sessionManagement(session ->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
     .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

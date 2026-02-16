@@ -22,7 +22,7 @@ import lombok.Setter;
 //객체를 체이닝 방식으로 안전하게 생성하게 해주는 Lombok 어노테이션
 @Builder
 @Entity
-@Table(name = "Users")
+@Table(name = "User")
 @Getter
 @Setter
 //모든 필드를 매개변수로 받는 생성자를 자동으로 만들어주는 Lombok 어노테이션

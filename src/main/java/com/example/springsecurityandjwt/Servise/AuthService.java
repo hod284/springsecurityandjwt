@@ -45,7 +45,7 @@ public class AuthService {
         String refreshToken = jwtProvider.GeneratedRefreshToken(new CustomDetail(user));
       // Refresh Token을 Redis에 저장
         redisTemplate.opsForValue()
-                .set("REFRESH:" + user.getUsername(), refreshToken, jwtProvider.RefreshExpire, TimeUnit.DAYS);
+                .set("REFRESH:" + user.getUsername(), refreshToken, jwtProvider.RefreshExpire, TimeUnit.MILLISECONDS);
          log.info("User registered in: {}", user.getUsername());
          return new AuthResponse(accessToken,
             refreshToken,
@@ -67,7 +67,7 @@ public class AuthService {
         String refreshToken = jwtProvider.GeneratedRefreshToken(new CustomDetail(user));
            // Refresh Token을 Redis에 저장
         redisTemplate.opsForValue()
-                .set("REFRESH:" + user.getUsername(), refreshToken, jwtProvider.RefreshExpire, TimeUnit.MICROSECONDS);
+                .set("REFRESH:" + user.getUsername(), refreshToken, jwtProvider.RefreshExpire, TimeUnit.MILLISECONDS);
          log.info("User logged in: {}", user.getUsername());
           return new AuthResponse(accessToken,
             refreshToken,
