@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import com.example.springsecurityandjwt.Repositry.UserRepositry;
+import com.example.springsecurityandjwt.Repositry.UserRepository;
 import com.example.springsecurityandjwt.jwt.JwtProvider;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import com.example.springsecurityandjwt.DTO.*;
 @Slf4j
 @RequiredArgsConstructor
 public class AuthService {
-    private final UserRepositry userRepositry;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
@@ -26,10 +26,10 @@ public class AuthService {
 
     @Transactional
    public AuthResponse register(RegisterRequest request) {
-        if (userRepositry.existsByUsername(request.username())) {
+        if (userRepository.existsByUsername(request.username())) {
             throw new RuntimeException("Username is already taken");
         }
-         if (userRepositry.existsByEmail(request.email())) {
+         if (userRepository.existsByEmail(request.email())) {
             throw new RuntimeException("이미 존재하는 이메일입니다");
         }
         User user = User.builder()
@@ -40,7 +40,7 @@ public class AuthService {
                 .enabled(true)
                 .build();
          
-        userRepositry.save(user);
+        userRepository.save(user);
         String accessToken = jwtProvider.GeneratedAcessToken(new CustomDetail(user));
         String refreshToken = jwtProvider.GeneratedRefreshToken(new CustomDetail(user));
       // Refresh Token을 Redis에 저장
@@ -61,13 +61,13 @@ public class AuthService {
                 )
         );
 
-        User user = userRepositry.findbyUserId(request.username())
+        User user = userRepository.findbyUserId(request.username())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         String accessToken = jwtProvider.GeneratedAcessToken(new CustomDetail(user));
         String refreshToken = jwtProvider.GeneratedRefreshToken(new CustomDetail(user));
            // Refresh Token을 Redis에 저장
         redisTemplate.opsForValue()
-                .set("REFRESH:" + user.getUsername(), refreshToken, jwtProvider.RefreshExpire, TimeUnit.DAYS);
+                .set("REFRESH:" + user.getUsername(), refreshToken, jwtProvider.RefreshExpire, TimeUnit.MICROSECONDS);
          log.info("User logged in: {}", user.getUsername());
           return new AuthResponse(accessToken,
             refreshToken,
@@ -85,10 +85,10 @@ public class AuthService {
         if (!storedRefreshToken.equals(refreshToken)) 
             throw new RuntimeException("유효하지 않은 Refresh token입니다");
 
-        User user = userRepositry.findbyUserId(username)
+        User user = userRepository.findbyUserId(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if(jwtProvider.isTokenValid(storedRefreshToken, new CustomDetail(user)))
+        if(!jwtProvider.isTokenValid(storedRefreshToken, new CustomDetail(user)))
             throw new RuntimeException("만료된 Refresh token입니다");
 
         String newAccessToken = jwtProvider.GeneratedAcessToken(new CustomDetail(user));

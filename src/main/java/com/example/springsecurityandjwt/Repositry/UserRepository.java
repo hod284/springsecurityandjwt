@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.*;
 
 public interface UserRepository  extends JpaRepository<User,Long>{
 
-   @Query("SELECT u FROM Users u WHERE  u.username = :mid")
+   @Query("SELECT u FROM User u WHERE  u.username = :mid")
    public Optional<User> findbyUserId(@Param("mid") String mid);
    public boolean existsByUsername(String username);
      boolean existsByEmail(String email);
